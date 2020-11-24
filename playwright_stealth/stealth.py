@@ -20,6 +20,7 @@ SCRIPTS: Dict[str, str] = {
     'navigator_languages': from_file('navigator.languages.js'),
     'navigator_platform': from_file('navigator.platform.js'),
     'navigator_user_agent': from_file('navigator.userAgent.js'),
+    'navigator_hardware_concurrency': from_file('navigator.hardwareConcurrency.js'),
     'media_codecs': from_file('media.codecs.js'),
     'chrome_runtime': from_file('chrome.runtime.js'),
     'chrome_loadtimes': from_file('chrome.loadtimes.js'),
@@ -64,6 +65,7 @@ class StealthConfig:
     navigator_languages: bool = True
     navigator_platform: bool = True
     navigator_user_agent: bool = True
+    navigator_hardware_concurrency: int = 4
     media_codecs: bool = True
     iframe_content_window: bool = True
     chrome_runtime: bool = True
