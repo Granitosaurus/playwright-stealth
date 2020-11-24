@@ -66,7 +66,7 @@ try {
     // Adds a hook to intercept iframe creation events
     const addIframeCreationSniffer = () => {
         /* global document */
-        const createElement = {
+        const createElementHandler = {
             // Make toString() native
             get(target, key) {
                 return Reflect.get(target, key)
@@ -83,10 +83,11 @@ try {
             }
         }
         // All this just due to iframes with srcdoc bug
-        document.createElement = new Proxy(
-            document.createElement,
-            createElement
-        )
+        utils.replaceWithProxy(
+            document,
+            'createElement',
+            createElementHandler
+          )
     }
 
     // Let's go
