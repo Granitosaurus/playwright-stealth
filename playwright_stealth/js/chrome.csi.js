@@ -9,24 +9,19 @@ if (!window.chrome) {
     })
 }
 
-// That means we're running headful and don't need to mock anything
-if ('csi' in window.chrome) {
-    throw new Error('skipping chrome csi update, running in headfull mode')
-}
-
+// Check if we're running headful and don't need to mock anything
 // Check that the Navigation Timing API v1 is available, we need that
-if (!window.performance || !window.performance.timing) {
-    throw new Error('skipping chrome csi update, Navigation Time API v1 is not available')
-}
+if (!('csi' in window.chrome) && (window.performance || window.performance.timing)) {
+    const {csi_timing} = window.performance
 
-const {csi_timing} = window.performance
-
-window.chrome.csi = function () {
-    return {
-        onloadT: csi_timing.domContentLoadedEventEnd,
-        startE: csi_timing.navigationStart,
-        pageT: Date.now() - csi_timing.navigationStart,
-        tran: 15 // Transition type or something
+    log.info('loading chrome.csi.js')
+    window.chrome.csi = function () {
+        return {
+            onloadT: csi_timing.domContentLoadedEventEnd,
+            startE: csi_timing.navigationStart,
+            pageT: Date.now() - csi_timing.navigationStart,
+            tran: 15 // Transition type or something
+        }
     }
+    utils.patchToString(window.chrome.csi)
 }
-utils.patchToString(window.chrome.csi)

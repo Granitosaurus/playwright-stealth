@@ -50,44 +50,44 @@ data = {
 
 // That means we're running headful
 const hasPlugins = 'plugins' in navigator && navigator.plugins.length
-if (hasPlugins) {
-    throw new Error('skipping plugin rewrite, running in headful mode')
-}
+if (!(hasPlugins)) {
 
-const mimeTypes = generateMagicArray(
-    data.mimeTypes,
-    MimeTypeArray.prototype,
-    MimeType.prototype,
-    'type'
-)
-const plugins = generateMagicArray(
-    data.plugins,
-    PluginArray.prototype,
-    Plugin.prototype,
-    'name'
-)
+    log.info('loading navigator.plugins.js')
+    const mimeTypes = generateMagicArray(
+        data.mimeTypes,
+        MimeTypeArray.prototype,
+        MimeType.prototype,
+        'type'
+    )
+    const plugins = generateMagicArray(
+        data.plugins,
+        PluginArray.prototype,
+        Plugin.prototype,
+        'name'
+    )
 
-// Plugin and MimeType cross-reference each other, let's do that now
-// Note: We're looping through `data.plugins` here, not the generated `plugins`
-for (const pluginData of data.plugins) {
-    pluginData.__mimeTypes.forEach((type, index) => {
-        plugins[pluginData.name][index] = mimeTypes[type]
-        plugins[type] = mimeTypes[type]
-        Object.defineProperty(mimeTypes[type], 'enabledPlugin', {
-            value: JSON.parse(JSON.stringify(plugins[pluginData.name])),
-            writable: false,
-            enumerable: false, // Important: `JSON.stringify(navigator.plugins)`
-            configurable: false
+    // Plugin and MimeType cross-reference each other, let's do that now
+    // Note: We're looping through `data.plugins` here, not the generated `plugins`
+    for (const pluginData of data.plugins) {
+        pluginData.__mimeTypes.forEach((type, index) => {
+            plugins[pluginData.name][index] = mimeTypes[type]
+            plugins[type] = mimeTypes[type]
+            Object.defineProperty(mimeTypes[type], 'enabledPlugin', {
+                value: JSON.parse(JSON.stringify(plugins[pluginData.name])),
+                writable: false,
+                enumerable: false, // Important: `JSON.stringify(navigator.plugins)`
+                configurable: false
+            })
         })
-    })
+    }
+
+    const patchNavigator = (name, value) =>
+        utils.replaceProperty(Object.getPrototypeOf(navigator), name, {
+            get() {
+                return value
+            }
+        })
+
+    patchNavigator('mimeTypes', mimeTypes)
+    patchNavigator('plugins', plugins)
 }
-
-const patchNavigator = (name, value) =>
-    utils.replaceProperty(Object.getPrototypeOf(navigator), name, {
-        get() {
-            return value
-        }
-    })
-
-patchNavigator('mimeTypes', mimeTypes)
-patchNavigator('plugins', plugins)

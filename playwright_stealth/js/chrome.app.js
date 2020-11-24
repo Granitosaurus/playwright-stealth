@@ -9,25 +9,22 @@ if (!window.chrome) {
     })
 }
 
-// That means we're running headful and don't need to mock anything
-if ('app' in window.chrome) {
-    throw new Error('skipping chrome app update, Navigation Time API v1 is not available')
-}
-
-const makeError = {
-    ErrorInInvocation: fn => {
-        const err = new TypeError(`Error in invocation of app.${fn}()`)
-        return utils.stripErrorWithAnchor(
-            err,
-            `at ${fn} (eval at <anonymous>`
-        )
+// app in window.chrome means we're running headful and don't need to mock anything
+if (!('app' in window.chrome)) {
+    const makeError = {
+        ErrorInInvocation: fn => {
+            const err = new TypeError(`Error in invocation of app.${fn}()`)
+            return utils.stripErrorWithAnchor(
+                err,
+                `at ${fn} (eval at <anonymous>`
+            )
+        }
     }
-}
 
 // There's a some static data in that property which doesn't seem to change,
 // we should periodically check for updates: `JSON.stringify(window.app, null, 2)`
-const APP_STATIC_DATA = JSON.parse(
-    `
+    const APP_STATIC_DATA = JSON.parse(
+        `
 {
   "isInstalled": false,
   "InstallState": {
@@ -42,32 +39,33 @@ const APP_STATIC_DATA = JSON.parse(
   }
 }
         `.trim()
-)
+    )
 
-window.chrome.app = {
-    ...APP_STATIC_DATA,
+    window.chrome.app = {
+        ...APP_STATIC_DATA,
 
-    get isInstalled() {
-        return false
-    },
+        get isInstalled() {
+            return false
+        },
 
-    getDetails: function getDetails() {
-        if (arguments.length) {
-            throw makeError.ErrorInInvocation(`getDetails`)
+        getDetails: function getDetails() {
+            if (arguments.length) {
+                throw makeError.ErrorInInvocation(`getDetails`)
+            }
+            return null
+        },
+        getIsInstalled: function getDetails() {
+            if (arguments.length) {
+                throw makeError.ErrorInInvocation(`getIsInstalled`)
+            }
+            return false
+        },
+        runningState: function getDetails() {
+            if (arguments.length) {
+                throw makeError.ErrorInInvocation(`runningState`)
+            }
+            return 'cannot_run'
         }
-        return null
-    },
-    getIsInstalled: function getDetails() {
-        if (arguments.length) {
-            throw makeError.ErrorInInvocation(`getIsInstalled`)
-        }
-        return false
-    },
-    runningState: function getDetails() {
-        if (arguments.length) {
-            throw makeError.ErrorInInvocation(`runningState`)
-        }
-        return 'cannot_run'
     }
+    utils.patchToStringNested(window.chrome.app)
 }
-utils.patchToStringNested(window.chrome.app)
