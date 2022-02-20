@@ -13,7 +13,7 @@ def from_file(name):
 
 
 SCRIPTS: Dict[str, str] = {
-    'webdrive': 'delete Object.getPrototypeOf(navigator).webdriver',
+    'webdrive': from_file('navigator.webdriver.js'),
     'navigator_vendor': from_file('navigator.vendor.js'),
     'navigator_plugins': from_file('navigator.plugins.js'),
     'navigator_permissions': from_file('navigator.permissions.js'),
@@ -94,6 +94,7 @@ class StealthConfig:
             'navigator_user_agent': self.nav_user_agent,
             'languages': list(self.languages),
             'runOnInsecureOrigins': self.runOnInsecureOrigins,
+            'hardwareConcurrency': self.navigator_hardware_concurrency,
         })
         # defined options constant
         yield f'const opts = {opts}'
@@ -138,10 +139,10 @@ class StealthConfig:
 def stealth_sync(page: SyncPage, config: StealthConfig = None):
     """teaches synchronous playwright Page to be stealthy like a ninja!"""
     for script in (config or StealthConfig()).enabled_scripts:
-        page.addInitScript(script)
+        page.add_init_script(script)
 
 
 async def stealth_async(page: AsyncPage, config: StealthConfig = None):
     """teaches asynchronous playwright Page to be stealthy like a ninja!"""
     for script in (config or StealthConfig()).enabled_scripts:
-        await page.addInitScript(script)
+        await page.add_init_script(script)

@@ -1,8 +1,10 @@
-const patchNavigator = (name, value) =>
-    utils.replaceProperty(Object.getPrototypeOf(navigator), name, {
-        get() {
-            return value
-        }
-    })
-
-patchNavigator('hardwareConcurrency', opts.navigator_hardware_concurrency || 4);
+// Set the hardwareConcurrency to 4 (optionally configurable with hardwareConcurrency)
+(utils) => {
+  utils.replaceGetterWithProxy(
+    Object.getPrototypeOf(navigator),
+    'hardwareConcurrency',
+    utils.makeHandler().getterValue(opts.hardwareConcurrency)
+  )
+}, {
+  opts: this.opts
+}

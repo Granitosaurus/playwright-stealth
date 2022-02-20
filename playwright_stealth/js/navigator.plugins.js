@@ -52,7 +52,7 @@ data = {
 const hasPlugins = 'plugins' in navigator && navigator.plugins.length
 if (!(hasPlugins)) {
 
-    log.info('loading navigator.plugins.js')
+    console.log('loading navigator.plugins.js')
     const mimeTypes = generateMagicArray(
         data.mimeTypes,
         MimeTypeArray.prototype,

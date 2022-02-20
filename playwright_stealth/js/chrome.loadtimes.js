@@ -21,7 +21,7 @@ if (
     window.PerformancePaintTiming
 ) {
 
-    log.info('loading chrome.loadtimes.js')
+    console.log('loading chrome.loadtimes.js')
     const {performance} = window
 
     // Some stuff is not available on about:blank as it requires a navigation to occur,
