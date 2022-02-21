@@ -5,7 +5,7 @@ description = "stealth helper for playwright browser automation"
 license = 'GPL-3.0-or-later'
 authors = ["Bernardas Ališauskas <bernardas.alisauskas@pm.me>"]
 include = [
-    'playwright_stealth/js'
+    'playwright_stealth/js/*.js'
 ]
 
 [tool.poetry.dependencies]
