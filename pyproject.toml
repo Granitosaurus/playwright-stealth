@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "playwright-stealth"
-version = "0.2.0"
+version = "0.3.0"
 description = "stealth helper for playwright browser automation"
 license = 'GPL-3.0-or-later'
 authors = ["Bernardas Ališauskas <bernardas.alisauskas@pm.me>"]
